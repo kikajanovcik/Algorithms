@@ -118,9 +118,7 @@ public class Main {
         while (low <= high) {
             // find the mid value in the search space and compare it with target value
 
-            int mid = (low + high) / 2;    // overflow can happen
-            // int mid = low + (high - low)/2;
-            // int mid = high - (high - low)/2;
+            int mid = (low + high) / 2;
 
             if (target == arr[mid]) {
                 return mid; // target value is found, yay!
@@ -150,8 +148,7 @@ public class Main {
             return -1;
         }
 
-        int mid = (low + high)/2;    // overflow can happen
-        // int mid = low + (high - low)/2;
+        int mid = (low + high)/2;
 
         if (target == arr[mid]) {
             return mid; // target value is found, yay!
