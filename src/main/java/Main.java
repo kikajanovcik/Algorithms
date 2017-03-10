@@ -5,14 +5,17 @@ public class Main {
 
         //array to sort
         int[] arr = { 9, -5, 0, 11, 1, -2, 7, 3 };
+        int[] aux = { 10, 2, -3, 4 };
         int n = arr.length;
 
         //Try out algorithms by uncommenting one of the following methods (:
 
         //SORTING algorithms
-        //insertionSort(arr, n);
-        //selectionSort(arr, n);
-        //bubbleSort(arr, n);
+        //insertionSort(arr);
+        //doInsertionSort(arr);
+        //selectionSort(arr);
+        //bubbleSort(arr);
+        mergeSort(arr, 0, n-1);
 
         //BINARY search
         //System.out.println(binarySearch(arr, n, -5));
@@ -35,20 +38,38 @@ public class Main {
      * one item at a time. It is not very best in terms of performance but it is more efficient
      * in practice than most other simple O(n2) algorithms such as selection sort or bubble sort.
      */
-    static void insertionSort(int[] arr, int n) {
+    public static int[] insertionSort(int[] arr) {
         // Start from second element (element at index 0 is already sorted)
-        for (int i = 1; i < n; i++) {
-            int value = arr[i];
+        for (int i = 1; i < arr.length; i++) {
+            int valueToSwap = arr[i];
             int j = i;
 
-            // Find the index j within the sorted subset arr[0..i-1] where element arr[i] belongs
-            while (j > 0 && arr[j - 1] > value) {
+            // if valueToSwap is less than the number before, swap them
+            while (j > 0 && arr[j - 1] > valueToSwap) {
                 arr[j] = arr[j - 1];
                 j--;
             }
-            // subarray arr[j..i-1] is shifted to the right by one position i.e. arr[j+1..i]
-            arr[j] = value;
+            arr[j] = valueToSwap;
         }
+        return arr;
+    }
+
+    /** same sort but with loops only*/
+    public static int[] doInsertionSort(int[] arr){
+
+        int valueToSwap;
+        // Start from second element (element at index 0 is already sorted)
+        for (int i = 1; i < arr.length; i++) {
+            for (int j = i ; j > 0 ; j--) {
+                // if valueToSwap is less than the number before, swap them
+                if (arr[j] < arr[j-1]) {
+                    valueToSwap = arr[j];
+                    arr[j] = arr[j-1];
+                    arr[j-1] = valueToSwap;
+                }
+            }
+        }
+        return arr;
     }
 
     /** SELECTION SORT on int[] arr
@@ -57,25 +78,21 @@ public class Main {
      * and it has performance advantages over more complicated algorithms in certain situations,
      * particularly where auxiliary memory is limited.
      */
-    static void selectionSort(int[] arr, int n) {
-        // run (n - 1) times
-        for (int i = 0; i < n - 1; i++) {
-            // find the minimum element in the unsorted sub-array[i..n-1] and swap it with arr[i]
-            int min = i;
+    public static int[] selectionSort(int[] arr){
 
-            for (int j = i + 1; j < n; j++) {
+        for (int i = 0; i < arr.length - 1; i++) {
+            int index = i;
+            for (int j = i + 1; j < arr.length; j++)
                 // if arr[j] element is less, then it is the new minimum
-                if (arr[j] < arr[min]) {
-                    min = j; // update index of min element
+                if (arr[j] < arr[index]) {
+                    index = j; // update index of min element
                 }
-            }
-
-            // swap the minimum element in subarray[i..n-1] with arr[i]
-            int minElement = arr[min];
-
-            arr[min] = arr[i];
-            arr[i] = minElement;
+            // swap minimum element with arr[i]
+            int smallerNumber = arr[index];
+            arr[index] = arr[i];
+            arr[i] = smallerNumber;
         }
+        return arr;
     }
 
     /** BUBBLE SORT on int[] arr
@@ -86,15 +103,15 @@ public class Main {
      * and is not recommended when n is large.
      */
 
-    static void bubbleSort(int[] arr, int n) {
-        // run (n - 1) times
-        for (int j = 0; j < n - 1; j++) {
-            // last j items are already sorted, so inner loop can avoid looking at the last j items
-            // the algorithm can be stopped if the inner loop didn’t do any swap
-            for (int i = 0; i < n - 1 - j; i++) {
-                if (arr[i] > arr[i + 1]) {
-                    int next = arr[i + 1];
+    static void bubbleSort(int[] arr) {
 
+        int n = arr.length;
+        for (int j = 0; j < n - 1; j++) {
+            for (int i = 0; i < n - 1 - j; i++) {
+                //compare a pair of elements and swap for the lower one if needed
+                if (arr[i] > arr[i + 1]) {
+
+                    int next = arr[i + 1];
                     arr[i + 1] = arr[i];
                     arr[i] = next;
                 }
@@ -102,6 +119,57 @@ public class Main {
         }
     }
 
+    /**  MERGE SORT on int[] arr
+     *
+     * Merge sort is an efficient, general-purpose sorting algorithm
+     * which produces a stable sort, which means that the implementation
+     * preserves the input order of equal elements in the sorted output.
+     * Merge sort is a comparison sort, i.e. it can sort items of any type
+     * for which a less-than relation is defined.
+     *
+     * Merge sort first divides a large array into two smaller sub-arrays
+     * and then recursively sort the sub-arrays.
+     * */
+
+    static void mergeSort(int[] arr, int lowerIndex, int higherIndex) {
+
+        if (lowerIndex < higherIndex) {
+            int middle = lowerIndex + (higherIndex - lowerIndex) / 2;
+            // Below step sorts the left side of the array
+            mergeSort(arr, lowerIndex, middle);
+            // Below step sorts the right side of the array
+            mergeSort(arr, middle + 1, higherIndex);
+            // Now merge both sides
+            mergeParts(arr, lowerIndex, middle, higherIndex);
+        }
+    }
+
+    static void mergeParts(int[] array, int lowerIndex, int middle, int higherIndex) {
+        int[] tempMergArr = new int[higherIndex+1];
+
+        for (int i = lowerIndex; i <= higherIndex; i++) {
+            tempMergArr[i] = array[i];
+        }
+        int i = lowerIndex;
+        int j = middle + 1;
+        int k = lowerIndex;
+
+        while (i <= middle && j <= higherIndex) {
+            if (tempMergArr[i] <= tempMergArr[j]) {
+                array[k] = tempMergArr[i];
+                i++;
+            } else {
+                array[k] = tempMergArr[j];
+                j++;
+            }
+            k++;
+        }
+        while (i <= middle) {
+            array[k] = tempMergArr[i];
+            k++;
+            i++;
+        }
+    }
 
     /** Binary search
      *
@@ -117,7 +185,6 @@ public class Main {
         // iterate till search space contains at least one element
         while (low <= high) {
             // find the mid value in the search space and compare it with target value
-
             int mid = (low + high) / 2;
 
             if (target == arr[mid]) {
